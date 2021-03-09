@@ -68,6 +68,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView tvScreenName;
         TextView relativeTime;
         TextView username;
+        ImageView ivMedia;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,6 +77,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvScreenName = itemView.findViewById(R.id.tvScreenName);
             relativeTime = itemView.findViewById(R.id.relativeTime);
             username = itemView.findViewById(R.id.tvUsername);
+            ivMedia = itemView.findViewById(R.id.media);
         }
 
         public void bind(Tweet tweet) {
@@ -87,6 +89,25 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             Glide.with(context).load(tweet.user.profileImageUrl).transform(new RoundedCornersTransformation(radius, margin)).into(ivProfileImage);
             relativeTime.setText(tweet.getFormattedTimestamp()); ///////////////////////////////////
             username.setText(String.format("@%s", tweet.user.name));
+            if( !tweet.media.mediaURL.equals("")){
+                Glide.with(context).load(tweet.media.mediaURL).transform(new RoundedCornersTransformation(radius, margin)).into(ivMedia);
+            } else {
+                ivMedia.getLayoutParams().height = 0;
+                ivMedia.getLayoutParams().width = 0;
+                ivMedia.requestLayout();
+            }
+
+            //if (ivMedia.getDrawable()==null){
+                //ivMedia.setImageDrawable(null);
+             //
+            //}
+        }
+    }
+
+    public class ViewHolder1 extends RecyclerView.ViewHolder{
+
+        public ViewHolder1(@NonNull View itemView) {
+            super(itemView);
         }
     }
 }

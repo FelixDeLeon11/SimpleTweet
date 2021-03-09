@@ -69,11 +69,21 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="5dp"
             android:layout_marginTop="0dp"
-            android:layout_marginEnd="188dp"
             android:layout_marginBottom="3dp"
-            android:layout_toStartOf="@+id/relativeTime"
             android:layout_toEndOf="@+id/tvScreenName"
             tools:text="Username" />
+
+        <ImageView
+            android:id="@+id/media"
+            android:layout_width="300dp"
+            android:layout_height="250dp"
+            android:layout_below="@+id/tvBody"
+            android:layout_alignParentBottom="false"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="-15dp"
+            android:layout_marginBottom="1dp"
+            android:layout_toEndOf="@+id/ivProfileImage"
+            tools:srcCompat="@android:color/holo_red_dark" />
 
     </RelativeLayout>
 
