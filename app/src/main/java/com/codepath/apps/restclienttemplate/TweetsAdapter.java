@@ -33,9 +33,9 @@ public class TweetsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        if (tweets.get(position).media.mediaURL.equals("")){
+        if (tweets.get(position).mediaURL.equals("")){
             return NOMEDIA;
-        } else if (!tweets.get(position).media.mediaURL.equals("")){
+        } else if (!tweets.get(position).mediaURL.equals("")){
             return MEDIA;
         }
         return -1;
@@ -138,7 +138,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             Glide.with(context).load(tweet.user.profileImageUrl).transform(new RoundedCornersTransformation(radius, margin)).into(ivProfileImage);
             relativeTime.setText(tweet.getFormattedTimestamp()); ///////////////////////////////////
             username.setText(String.format("@%s", tweet.user.name));
-            Glide.with(context).load(tweet.media.mediaURL).transform(new RoundedCornersTransformation(radius, margin)).into(ivMedia);
+            Glide.with(context).load(tweet.mediaURL).transform(new RoundedCornersTransformation(radius, margin)).into(ivMedia);
         }
     }
 
