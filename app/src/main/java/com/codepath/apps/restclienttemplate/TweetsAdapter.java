@@ -18,50 +18,71 @@ import java.util.List;
 
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
-public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
+public class TweetsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    // The items to display in your RecyclerView
     Context context;
     List<Tweet> tweets;
 
-    // Pass in context and tweets
+    private final int NOMEDIA = 0, MEDIA = 1;
+
+    // Provide a suitable constructor (depends on the kind of dataset)
     public TweetsAdapter(Context context, List<Tweet> tweets) {
-        this.context = context;
         this.tweets = tweets;
+        this.context = context;
     }
 
-    // inflate layout for each row
+    @Override
+    public int getItemViewType(int position) {
+        if (tweets.get(position).media.mediaURL.equals("")){
+            return NOMEDIA;
+        } else if (!tweets.get(position).media.mediaURL.equals("")){
+            return MEDIA;
+        }
+        return -1;
+    }
+
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_tweet, parent, false);
-        return new ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        RecyclerView.ViewHolder viewHolder;
+        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+
+        switch (viewType){
+            case NOMEDIA:
+                View v1 = inflater.inflate(R.layout.item_tweet, viewGroup, false);
+                viewHolder = new ViewHolder(v1);
+                break;
+            default:
+                View v2 = inflater.inflate(R.layout.item_tweet_media, viewGroup, false);
+                viewHolder = new ViewHolder1(v2);
+                break;
+        }
+        return viewHolder;
     }
 
-    //bind values based on position of element
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        //Get the data at position
-        Tweet tweet = tweets.get(position);
-        //Bind the tweet with the view holder
-        holder.bind(tweet);
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        switch (viewHolder.getItemViewType()) {
+            case NOMEDIA:
+                ViewHolder vh1 = (ViewHolder) viewHolder;
+                Tweet tweet = tweets.get(position);
+                vh1.bind(tweet);
+                break;
+            default:
+                ViewHolder1 vh2 = (ViewHolder1) viewHolder;
+                Tweet tweet1 = tweets.get(position);
+                vh2.bind(tweet1);
+                break;
+        }
     }
 
+    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return tweets.size();
     }
 
-    // Clean all elements of the recycler
-    public void clear(){
-        tweets.clear();
-        notifyDataSetChanged();
-    }
-
-    // Add a list of items -- change to type used
-    public void addAll(List<Tweet> tweetList){
-        tweets.addAll(tweetList);
-        notifyDataSetChanged();
-    }
-    //define a viewholder
+    //define a viewholder ///// VIEW FOR TWEETS WITHOUT IMAGES (NOMEDIA) ////////////////
     public class ViewHolder extends RecyclerView.ViewHolder{
         ImageView ivProfileImage;
         TextView tvBody;
@@ -69,8 +90,36 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView relativeTime;
         TextView username;
         ImageView ivMedia;
-
         public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
+            tvBody = itemView.findViewById(R.id.tvBody);
+            tvScreenName = itemView.findViewById(R.id.tvScreenName);
+            relativeTime = itemView.findViewById(R.id.relativeTime);
+            username = itemView.findViewById(R.id.tvUsername);
+            ivMedia = itemView.findViewById(R.id.media);
+        }
+        public void bind(Tweet tweet) {
+            tvBody.setText(tweet.body);
+            tvScreenName.setText(tweet.user.screenName);
+            int radius = 30; // corner radius, higher value = more rounded
+            int margin = 10;
+
+            Glide.with(context).load(tweet.user.profileImageUrl).transform(new RoundedCornersTransformation(radius, margin)).into(ivProfileImage);
+            relativeTime.setText(tweet.getFormattedTimestamp()); ///////////////////////////////////
+            username.setText(String.format("@%s", tweet.user.name));
+        }
+    }
+    //////////////    VIEW FOR TWEETS WITH IMAGES (MEDIA)       //////////////////////////////
+    public class ViewHolder1 extends RecyclerView.ViewHolder{
+        ImageView ivProfileImage;
+        TextView tvBody;
+        TextView tvScreenName;
+        TextView relativeTime;
+        TextView username;
+        ImageView ivMedia;
+
+        public ViewHolder1(@NonNull View itemView) {
             super(itemView);
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
             tvBody = itemView.findViewById(R.id.tvBody);
@@ -89,25 +138,17 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             Glide.with(context).load(tweet.user.profileImageUrl).transform(new RoundedCornersTransformation(radius, margin)).into(ivProfileImage);
             relativeTime.setText(tweet.getFormattedTimestamp()); ///////////////////////////////////
             username.setText(String.format("@%s", tweet.user.name));
-            if( !tweet.media.mediaURL.equals("")){
-                Glide.with(context).load(tweet.media.mediaURL).transform(new RoundedCornersTransformation(radius, margin)).into(ivMedia);
-            } else {
-                ivMedia.getLayoutParams().height = 0;
-                ivMedia.getLayoutParams().width = 0;
-                ivMedia.requestLayout();
-            }
-
-            //if (ivMedia.getDrawable()==null){
-                //ivMedia.setImageDrawable(null);
-             //
-            //}
+            Glide.with(context).load(tweet.media.mediaURL).transform(new RoundedCornersTransformation(radius, margin)).into(ivMedia);
         }
     }
 
-    public class ViewHolder1 extends RecyclerView.ViewHolder{
+    public void addAll(List<Tweet> tweetList){
+        tweets.addAll(tweetList);
+        notifyDataSetChanged();
+    }
 
-        public ViewHolder1(@NonNull View itemView) {
-            super(itemView);
-        }
+    public void clear(){
+        tweets.clear();
+        notifyDataSetChanged();
     }
 }
